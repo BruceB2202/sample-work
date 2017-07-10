@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/mvc
+          http://www.springframework.org/schema/mvc/spring-mvc.xsd
+          http://www.springframework.org/schema/tx
+          http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context.xsd
+          http://www.springframework.org/schema/aop
+          http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+    <!-- Bean definitions go here -->
+    
+    <bean id="floorMasteryIO" class="brucebreslin.swg.flooringmastery.View.UserIOConsoleImpl"/>
+    <bean id="floorMasteryView" class="brucebreslin.swg.flooringmastery.View.FlooringMasteryView">
+        <constructor-arg ref="floorMasteryIO"/>
+    </bean>
+    <bean id="floorMasteryTraining" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryTrainingOrderDaoFileImpl"/>
+    <bean id="floorMasteryProd" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryProductionOrderDaoFileImpl"/>
+    <bean id="floorMasteryStateDao" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryStateDaoFileImpl"/>
+    <bean id="floorMasteryProductDao" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryProductDaoFileImpl"/>
+    <bean id="floorMasteryService" class="brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayerImpl">
+        <constructor-arg ref="floorMasteryStateDao"/>
+        <constructor-arg ref="floorMasteryProductDao"/>
+        <!-- Change the below reference("ref") value to change between Production and Training Modes. Enter "FloorMasteryProd" for production and "FloorMasteryTraining" for training. -->
+        <constructor-arg ref="floorMasteryProd"/>
+    </bean>
+    <bean id="floorMasteryController" class="brucebreslin.swg.flooringmastery.Controller.FlooringMasteryController">
+        <constructor-arg ref="floorMasteryView"/>
+        <constructor-arg ref="floorMasteryService"/>
+    </bean>
+    <bean id="floorMasteryErrorLog" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryErrorLogFileImpl"/>
+    <bean id="floorMasteryErrorLogAdvice" class="brucebreslin.swg.flooringmastery.Advice.FlooringMasteryErrorLoggingAdvice">
+        <constructor-arg ref="floorMasteryErrorLog"/>
+    </bean>
+    <bean id="floorMasteryAuditLog" class="brucebreslin.swg.flooringmastery.Dao.FlooringMasteryAuditLogFileImpl"/>
+    <bean id="floorMasteryAuditLogAdvice" class="brucebreslin.swg.flooringmastery.Advice.FlooringMasteryAuditLogAdvice">
+        <constructor-arg ref="floorMasteryAuditLog"/>
+    </bean>
+    
+    
+    
+    <aop:config>
+        
+        <aop:aspect ref="floorMasteryErrorLogAdvice">   
+            <aop:after-throwing
+                method="createDuplicateOrderIdLog"
+                pointcut="execution(* brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayer.*(..))"
+                throwing="duplicateId"
+            />
+        </aop:aspect>
+        
+        
+        
+        <aop:aspect ref="floorMasteryErrorLogAdvice">
+            <aop:after-throwing
+                method="createOrderNotFoundLog"
+                pointcut="execution(* brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayer.*(..))"
+                throwing="orderNotFound"
+            />
+        </aop:aspect>
+        
+        
+        
+        <aop:aspect ref="floorMasteryAuditLogAdvice">
+            <aop:after-returning 
+                method="createAuditEntry"
+                pointcut="execution(* brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayer.addOrder(..))"
+            />
+        </aop:aspect>
+        
+        
+        <aop:aspect ref="floorMasteryAuditLogAdvice">
+            <aop:after-returning 
+                method="createAuditEntry"
+                pointcut="execution(* brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayer.editOrder(..))"
+            />
+        </aop:aspect>
+        
+        
+        
+        <aop:aspect ref="floorMasteryAuditLogAdvice">
+            <aop:after-returning 
+                method="createAuditEntry"
+                pointcut="execution(* brucebreslin.swg.flooringmastery.Service.FlooringMasteryServiceLayer.removeOrder(..))"
+            />
+        </aop:aspect>
+        
+        
+        
+    </aop:config>
+    
+    
+    
+    
+</beans>

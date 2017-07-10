@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vending Machine</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header text-center" style="margin-top: 0px">
+            <h1>Vending Machine</h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-8 well" id="menuDisplay">
+                <!-- menu items generated with jQuery -->
+            </div>
+            <div class="col-sm-4 panel" id="ioWindow">
+                <form>
+                    <div class="form-group text-center" id="creditManagement" style="border-bottom: 1px solid black; padding-bottom: 10px;">
+                      <label for="creditsInsertedDisplay">Credits Inserted</label>
+                      <input type="text" class="form-control" id="creditsInsertedDisplay" readonly="readonly">
+                      <div class="row" style="margin-top: 4px;">
+                        <input type="button" class="btn btn-success col-sm-3 col-sm-offset-2" value="$1.00" id="addDollarBtn">
+                        <input type="button" class="btn btn-success col-sm-3 col-sm-offset-1" value="$0.25" id="addQuarterBtn">
+                      </div>
+                      <div class="row" style="margin-top: 8px;">
+                        <input type="button" class="btn btn-success col-sm-3 col-sm-offset-2" value="$0.10" id="addDimeBtn">
+                        <input type="button" class="btn btn-success col-sm-3 col-sm-offset-1" value="$0.05" id="addNickleBtn">
+                      </div>
+                    </div>
+                    <div class="form-group text-center" id="messageDisplayArea" style="border-bottom: 1px solid black; padding-bottom: 55px;">
+                      <label for="messageDisplay">Messages</label>
+                      <input type="text" class="form-control" id="messageDisplay" readonly="readonly">
+                      <div class="row" style="margin-top: 15px;">
+                        <label for="itemSelectionWindow">Item: </label>
+                        <input type="text" id="itemSelectionWindow" readonly="readonly">
+                      </div>
+                      <input type="button" class="btn btn-primary col-sm-8 col-sm-offset-2" value="Purchase Item" id="makePurchaseBtn" style="margin-top: 10px;">
+                    </div>
+                    <div class="form-group text-center" id="changeReturnArea">
+                      <label for="changeReturnDisplay">Change Return</label>
+                      <textarea class="form-control" rows="5" id="changeReturnDisplay" readonly="read"></textarea>
+                      <input type="button" class="btn btn-primary col-sm-8 col-sm-offset-2" id="changeReturnBtn" value="Change Return" style="margin-top: 10px;">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/jquery-2.2.4.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/home.js"></script>
+
+</html>
