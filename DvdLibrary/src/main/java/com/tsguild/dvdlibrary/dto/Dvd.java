@@ -7,13 +7,12 @@ package com.tsguild.dvdlibrary.dto;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  *
- * @author Bruce_Breslin
+ * @author Bruce_Bresli
  */
 public class Dvd {
 

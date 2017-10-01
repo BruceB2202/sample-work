@@ -1,0 +1,212 @@
+DROP DATABASE IF EXISTS HotelReservation;
+CREATE DATABASE HotelReservation;
+
+
+CREATE TABLE HotelReservation.RoomType (
+  RoomTypeID INT NOT NULL AUTO_INCREMENT,
+  RoomTypeName VARCHAR(20) NOT NULL,
+  PRIMARY KEY (RoomTypeID));
+  
+CREATE TABLE HotelReservation.Season (
+  SeasonID INT NOT NULL AUTO_INCREMENT,
+  SeasonName VARCHAR(40) NOT NULL,
+  SeasonStart DATE NOT NULL,
+  SeasonEnd DATE NOT NULL,
+  PRIMARY KEY (SeasonID));
+  
+CREATE TABLE HotelReservation.SeasonRoomType (
+  SeasonID INT NOT NULL,
+  RoomTypeID INT NOT NULL,
+  RoomRate DECIMAL(6,2),
+  PRIMARY KEY (SeasonID, RoomTypeID));
+  
+  ALTER TABLE
+  HotelReservation.SeasonRoomType
+  ADD CONSTRAINT fk_SeasonRoomType_SeasonID
+    FOREIGN KEY (SeasonID)
+    REFERENCES HotelReservation.Season(SeasonID);
+    
+  ALTER TABLE
+  HotelReservation.SeasonRoomType
+  ADD CONSTRAINT fk_SeasonRoomType_RoomTypeID
+    FOREIGN KEY (RoomTypeID)
+    REFERENCES HotelReservation.RoomType(RoomTypeID);
+
+
+CREATE TABLE HotelReservation.Amenity(
+  AmenityID INT NOT NULL AUTO_INCREMENT,
+  AmenityName VARCHAR(25) NOT NULL,
+  PRIMARY KEY (AmenityID));
+
+
+CREATE TABLE HotelReservation.Room(
+  RoomID INT NOT NULL AUTO_INCREMENT,
+  RoomTypeID INT NOT NULL,
+  RoomFloor INT NOT NULL,
+  RoomOccupancyLimit INT NOT NULL,
+  PRIMARY KEY (RoomID));
+  
+  ALTER TABLE
+  HotelReservation.Room
+  ADD CONSTRAINT fk_Room_RoomTypeID
+    FOREIGN KEY (RoomTypeID)
+    REFERENCES HotelReservation.RoomType(RoomTypeID);
+    
+CREATE TABLE HotelReservation.RoomAmenity(
+	RoomID INT NOT NULL,
+    AmenityID INT NOT NULL,
+    PRIMARY KEY (RoomID, AmenityID));
+    
+	ALTER TABLE
+    HotelReservation.RoomAmenity
+    ADD CONSTRAINT fk_RoomAmenity_RoomID
+		FOREIGN KEY (RoomID)
+        REFERENCES HotelReservation.Room(RoomID);
+	
+    ALTER TABLE
+    HotelReservation.RoomAmenity
+    ADD CONSTRAINT fk_RoomAmenity_AmenityID
+		FOREIGN KEY (AmenityID)
+        REFERENCES HotelReservation.Amenity(AmenityID);
+
+
+CREATE TABLE HotelReservation.Customer(
+  CustomerID INT NOT NULL AUTO_INCREMENT,
+  CustomerFirstName VARCHAR(15) NOT NULL,
+  CustomerLastName VARCHAR(25) NOT NULL,
+  CustomerPhone VARCHAR(12) NOT NULL,
+  CustomerEmail VARCHAR(255) NOT NULL,
+  CustomerAddress VARCHAR(254) NOT NULL,
+  PRIMARY KEY (CustomerID));
+
+
+CREATE TABLE HotelReservation.PromoCode(
+  PromoCode VARCHAR(15) NOT NULL,
+  DateBegins DATE NOT NULL,
+  DateEnds DATE NOT NULL,
+  PercentageOff DECIMAL(5,4) NULL,
+  MoneyOff DECIMAL(6,2) NULL,
+  PRIMARY KEY (PromoCode));
+
+
+CREATE TABLE HotelReservation.Reservation(
+  ReservationID INT NOT NULL AUTO_INCREMENT,
+  CustomerID INT NOT NULL,
+  PromoCode VARCHAR(15),
+  PRIMARY KEY (ReservationID, CustomerID));
+  
+  ALTER TABLE
+  HotelReservation.Reservation
+  ADD CONSTRAINT fk_Reservation_CustomerID
+    FOREIGN KEY (CustomerID)
+    REFERENCES HotelReservation.Customer (CustomerID);
+  
+  ALTER TABLE
+  HotelReservation.Reservation
+  ADD CONSTRAINT fk_Reservation_PromoCode
+    FOREIGN KEY (PromoCode)
+    REFERENCES HotelReservation.PromoCode (PromoCode);
+
+
+CREATE TABLE HotelReservation.Guest (
+  GuestID INT NOT NULL AUTO_INCREMENT,
+  GuestFirstName VARCHAR(15) NOT NULL,
+  GuestLastName VARCHAR(25) NOT NULL,
+  GuestAge TINYINT NOT NULL,
+  PRIMARY KEY (GuestID));
+
+
+CREATE TABLE HotelReservation.ReservationGuest (
+  ReservationID INT NOT NULL,
+  GuestID INT NOT NULL,
+  PRIMARY KEY (ReservationID, GuestID));
+  
+  ALTER TABLE
+  HotelReservation.ReservationGuest
+  ADD CONSTRAINT fk_ReservationGuest_ReservationID
+    FOREIGN KEY (ReservationID)
+    REFERENCES HotelReservation.Reservation (ReservationID);
+  
+  ALTER TABLE
+  HotelReservation.ReservationGuest
+  ADD CONSTRAINT fk_ReservationGuest_GuestID
+    FOREIGN KEY (GuestID)
+    REFERENCES HotelReservation.Guest (GuestID);
+
+
+CREATE TABLE HotelReservation.ReservationRoom (
+  ReservationID INT NOT NULL,
+  RoomID INT NOT NULL,
+  ReservationArrivalDate DATE NOT NULL,
+  ReservationDepartureDate DATE NOT NULL,
+  PRIMARY KEY (ReservationID, RoomID));
+  
+  ALTER TABLE
+  HotelReservation.ReservationRoom
+  ADD CONSTRAINT fk_ReservationRoom_ReservationID
+    FOREIGN KEY (ReservationID)
+    REFERENCES HotelReservation.Reservation (ReservationID);
+  
+  ALTER TABLE
+  HotelReservation.ReservationRoom
+  ADD CONSTRAINT fk_ReservationRoom_RoomID
+    FOREIGN KEY (RoomID)
+    REFERENCES HotelReservation.Room (RoomID);
+
+
+CREATE TABLE HotelReservation.AddOn (
+  AddOnID INT NOT NULL,
+  AddOnType VARCHAR(10) NOT NULL,
+  AddOnName VARCHAR(45) NOT NULL,
+  AddOnRate DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (AddOnID));
+
+
+CREATE TABLE HotelReservation.AddOnReservation (
+  AddOnID INT NOT NULL,
+  ReservationID INT NOT NULL,
+  AddOnRate DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (AddOnID, ReservationID));
+  
+  ALTER TABLE 
+  HotelReservation.AddOnReservation
+  ADD CONSTRAINT fk_AddOnReservation_AddOnID
+    FOREIGN KEY (AddOnID)
+    REFERENCES HotelReservation.AddOn(AddOnID);
+  
+  ALTER TABLE
+  HotelReservation.AddOnReservation
+  ADD CONSTRAINT fk_AddOnReservation_ReservationID
+    FOREIGN KEY (ReservationID)
+    REFERENCES HotelReservation.Reservation(ReservationID);
+    
+CREATE TABLE HotelReservation.Bill (
+	BillID INT NOT NULL,
+	ReservationID INT NOT NULL,
+    SubTotal DECIMAL(8,2) NOT NULL,
+    Tax DECIMAL(8,2) NOT NULL,
+    GrandTotal DECIMAL(8,2) NOT NULL,
+    PRIMARY KEY (BillID));
+    
+    ALTER TABLE
+    HotelReservation.Bill
+    ADD CONSTRAINT fk_Bill_ReservationID
+    FOREIGN KEY (ReservationID)
+    REFERENCES HotelReservation.Reservation(ReservationID);
+    
+CREATE TABLE HotelReservation.BillAddOn (
+	BillID INT NOT NULL,
+    AddOnID INT NOT NULL,
+    PRIMARY KEY (BillID, AddOnID));
+    
+    ALTER TABLE
+    HotelReservation.BillAddOn
+    ADD CONSTRAINT fk_BillAddOn_BillID
+    FOREIGN KEY (BillID)
+    REFERENCES HotelReservation.Bill(BillID);
+    
+    ALTER TABLE
+    HotelReservation.BillAddOn
+    ADD CONSTRAINT fk_BillAddOn_AddOnID
+    FOREIGN KEY (AddOnID)
+    REFERENCES HotelReservation.AddOn(AddOnID);
