@@ -1,2 +1,0 @@
-2017-03-02T22:04:10.964: InsufficientFundsException || Snickers
-2017-05-11T12:29:14.578: InsufficientFundsException || Snickers
